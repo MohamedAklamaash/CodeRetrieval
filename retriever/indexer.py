@@ -1,3 +1,4 @@
+import importlib
 import os
 import json
 from pathlib import Path
@@ -18,14 +19,31 @@ EXTENSION_TO_LANGUAGE = {
     '.cs': 'c_sharp'
 }
 
+PACKAGE_QUERY_DIRS = {
+    'python': 'tree_sitter_python',
+    'java': 'tree_sitter_java',
+    'javascript': 'tree_sitter_javascript',
+    'cpp': 'tree_sitter_cpp',
+    'c_sharp': 'tree_sitter_c_sharp',
+}
+
+def packaged_tags_path(lang):
+    module = importlib.import_module(PACKAGE_QUERY_DIRS[lang])
+    package_root = Path(module.__file__).parent
+    # tree-sitter-c-sharp installs its queries under a hyphenated sibling directory.
+    candidates = [package_root / "queries" / "tags.scm",
+                  package_root.parent / "tree_sitter_c-sharp" / "queries" / "tags.scm"]
+    return next((p for p in candidates if p.exists()), None)
+
 def load_queries(languages):
     """Loads tag queries for all supported languages."""
     queries = {}
     for lang in languages:
-        # Map language name to folder name (if different)
         folder_name = lang.replace('_', '-')
         query_path = Path(f"retriever/grammars/tree-sitter-{folder_name}/queries/tags.scm")
-        
+        if not query_path.exists():
+            query_path = packaged_tags_path(lang) or query_path
+
         if query_path.exists():
             with open(query_path, 'r') as f:
                 queries[lang] = f.read()

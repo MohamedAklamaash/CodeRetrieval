@@ -1,0 +1,10 @@
+# Gate tuned on SWE-bench Lite dev; inner ranker uses the dev-tuned relationship settings.
+[expansion]
+seeds = 20
+max_depth = 2
+
+[ranking]
+propagation_weight = 0.5
+propagation_cap = 0.5
+gate = "margin"
+gate_threshold = 0.02

@@ -1,0 +1,10 @@
+# One generous online expansion per query; depth, seed-count and edge ablations are derived offline
+# from its logged provenance and per-request timings by `code-retrieval report`.
+[expansion]
+seeds = 20
+max_depth = 2
+max_neighbors_per_edge = 8
+max_requests = 250
+max_candidates = 600
+request_timeout = 15.0
+query_timeout = 240.0
